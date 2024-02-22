@@ -14,37 +14,43 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
-import SignUpModal from "../../Modal/SignUpModal";
+import SignInModal from "../../Modal/SignInModal";
+
 
 function NavBar() {
   const { user, logOut } = useAuth();
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
   const pages = (
     <>
       <Link to="/" style={{ textDecoration: "none" }}>
         {" "}
-        <MenuItem sx={{ fontSize: { xs: 15, md: 18 } }}>Home</MenuItem>
+        <MenuItem>Home</MenuItem>
       </Link>
       <Link to="add" style={{ textDecoration: "none" }}>
         {" "}
-        <MenuItem sx={{ fontSize: { xs: 15, md: 18 } }}>
-          Add Product
-        </MenuItem>{" "}
+        <MenuItem>Add Product</MenuItem>{" "}
       </Link>
       <Link to="cart" style={{ textDecoration: "none" }}>
         {" "}
-        <MenuItem sx={{ fontSize: { xs: 15, md: 18 } }}>My Cart</MenuItem>{" "}
+        <MenuItem>My Cart</MenuItem>{" "}
       </Link>
       {!user && (
         <MenuItem
-          onClick={handleOpenModal}
-          sx={{
-            fontSize: { xs: 15, md: 18 },
+          onClick={() => {
+            handleOpenModal();
+            handleCloseNavMenu();
+            handleCloseUserMenu();
           }}
         >
-          Login
+          Log in
         </MenuItem>
       )}
     </>
@@ -56,16 +62,9 @@ function NavBar() {
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
   };
 
   const handleSignOut = async () => {
@@ -160,34 +159,36 @@ function NavBar() {
           </Box>
 
           {/* avatar */}
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              <MenuItem onClick={handleSignOut}>
-                <Typography textAlign="center">Logout</Typography>
-              </MenuItem>
-            </Menu>
-          </Box>
-          <SignUpModal open={openModal} handleClose={handleCloseModal}/>
+          {user && (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title={user.displayName}>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={user.displayName} src={user.photoURL} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem onClick={handleSignOut}>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
+          )}
+          <SignInModal openIn={openModal} handleCloseIn={handleCloseModal} />
         </Toolbar>
       </Container>
     </AppBar>

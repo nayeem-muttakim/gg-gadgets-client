@@ -1,40 +1,77 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import SocialAuth from "../Shared/SocialAuths/SocialAuth";
+import { TextField } from "@mui/material";
+import { useForm } from "react-hook-form";
+import useAuth from "../Hooks/useAuth";
+import { imageUpload } from "../Utils/Utils";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-
-  width: 400,
   bgcolor: "background.paper",
-
   boxShadow: 24,
   p: 4,
+  maxWidth: 400,
+  borderRadius: 3,
 };
 
-export default function SignUpModal({ open, handleClose }) {
+export default function SignUpModal({ openUp, handleCloseUp }) {
+  const { signUp, updateUser } = useAuth();
+  const { register, handleSubmit } = useForm();
+
+  const onSubmit = async (data) => {
+    console.log(data.image["0"]);
+    const imageData = await imageUpload(data.image['0'])
+    console.log(imageData.url);
+  };
   return (
-    <Box>
+    <div>
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={openUp}
+        onClose={handleCloseUp}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
+          <SocialAuth />
+          <Typography
+            my={1}
+            fontSize={16}
+            fontWeight={200}
+            textAlign={"center"}
+          >
+            or
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              label="Name"
+              type="text"
+              {...register("name")}
+              fullWidth
+            />
+            <TextField
+              label="Email"
+              type="text"
+              {...register("email")}
+              fullWidth
+            />
+            <TextField type="file" {...register("image")} fullWidth />
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              {...register("pass")}
+              fullWidth
+            />
+            <input value={"Create Account"} type="submit" />
+          </form>
         </Box>
       </Modal>
-    </Box>
+    </div>
   );
 }
